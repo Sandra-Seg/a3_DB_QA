@@ -1,5 +1,3 @@
-```mermaid
-flowchart TD
+graph TD
     A[Inicio] --> B[Teste]
     B --> C[Funcionou]
-```
