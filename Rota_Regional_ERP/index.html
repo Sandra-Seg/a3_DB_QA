@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rota Regional ERP</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <section id="login-screen" class="login-screen">
+    <div class="login-card">
+      <div class="brand large"><span class="brand-mark">⌖</span><div><strong>Rota Regional</strong><small>ERP</small></div></div>
+      <p class="muted">Conectando pessoas a novos destinos</p>
+      <form id="login-form">
+        <label>E-mail<input id="login-email" type="email" value="vendedor@rotaregional.com" required></label>
+        <label>Senha<input id="login-password" type="password" value="123456" required></label>
+        <p id="login-error" class="error hidden"></p>
+        <button class="btn primary full" type="submit">Entrar <span>→</span></button>
+      </form>
+      <small class="hint">Demonstração: vendedor@rotaregional.com / 123456</small>
+    </div>
+    <div class="login-art"><div class="art-pin">⌖</div><h2>Mais que viagens,<br>experiências inesquecíveis.</h2><p>Gestão simples para sua agência crescer.</p></div>
+  </section>
+
+  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">⌖</span><div><strong>Rota Regional</strong><small>ERP</small></div></div>
+      <nav id="navigation">
+        <button class="nav-item active" data-page="dashboard">⌂ <span>Painel</span></button>
+        <button class="nav-item" data-page="clients">♙ <span>Clientes</span></button>
+        <button class="nav-item" data-page="packages">▧ <span>Pacotes</span></button>
+        <button class="nav-item" data-page="trips">⌁ <span>Viagens e grupos</span></button>
+        <button class="nav-item" data-page="reservations">▣ <span>Reservas</span></button>
+        <button class="nav-item" data-page="payments">＄ <span>Pagamentos</span></button>
+        <button class="nav-item" data-page="fleet">▤ <span>Frota</span></button>
+        <button class="nav-item" data-page="reports">▥ <span>Relatórios</span></button>
+      </nav>
+      <div class="sidebar-bottom"><span class="online-dot"></span> Sistema operacional <button id="logout-btn" class="logout">↪ Sair</button></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><button id="menu-toggle" class="icon-btn" aria-label="Abrir menu">☰</button><div class="breadcrumbs">Rota Regional <span>/</span> <b id="page-breadcrumb">Painel</b></div><div class="user-pill"><span class="avatar">JS</span><div><b>João Silva</b><small>Vendedor</small></div><span>⌄</span></div></header>
+      <div id="page-content" class="content"></div>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+  <div id="modal-root"></div>
+  <script src="app.js"></script>
+</body>
+</html>
