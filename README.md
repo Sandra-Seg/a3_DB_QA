@@ -12,4 +12,4 @@ Primeira parte do desenvolvimento do sistema:
 Segunda parte do desenvolvimento do sistema:
 ---
 - [x] Modelagem Física do Banco de Dados no MySQL
-- [ ] Escolha da interface do sistema
+- [x] Realização do protótipo
