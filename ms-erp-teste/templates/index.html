@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Reservas - Agência de Viagens</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="container">
+    <div class="topo no-print">
+      <h1>Sistema de Reservas - Agência de Viagens</h1>
+      <div class="topo-info" id="status-bar">Aguardando autenticação</div>
+    </div>
+
+    <!-- 1. TELA DE LOGIN -->
+    <div id="tela-login">
+      <h2>Acesso ao Sistema</h2>
+      <div class="bloco">
+        <div class="campo">
+          <label for="input-usuario">E-mail do Vendedor</label>
+          <input type="email" id="input-usuario" placeholder="ex: sidney.vendas@agencia.com">
+        </div>
+        <div class="campo">
+          <label for="input-senha">Senha</label>
+          <input type="password" id="input-senha" placeholder="Digite sua senha">
+        </div>
+        <button class="btn-primario" onclick="realizarLogin()">Entrar</button>
+      </div>
+    </div>
+
+    <!-- 2. TELA PRINCIPAL (MENU OPERACIONAL E GERENCIAL) -->
+    <div id="tela-principal" class="hidden">
+      <h2>Painel Principal: <span id="titulo-vendedor">--</span></h2>
+
+      <div class="bloco">
+        <h3>Atendimento e Vendas</h3>
+        <div class="menu-grid">
+          <button class="btn-primario" onclick="abrirTelaPacotes()">Venda de Pacotes</button>
+          <button onclick="abrirHistoricoReservas()">Histórico de Reservas</button>
+        </div>
+      </div>
+
+      <div class="bloco">
+        <h3>Gerenciamento e Operações</h3>
+        <div class="menu-grid">
+          <button onclick="abrirGerenciaPacotes()">Cadastro de Pacotes e Viagens</button>
+          <button onclick="abrirGerenciaLogistica()">Alocação de Frota e Guias</button>
+          <button onclick="abrirRelatoriosGerenciais()">Relatórios Gerenciais</button>
+        </div>
+      </div>
+
+      <div class="acoes">
+        <span></span>
+        <button class="btn-perigo" onclick="realizarLogout()">Sair do Sistema</button>
+      </div>
+    </div>
+
+    <!-- 3. TELA DE SELEÇÃO DE PACOTES -->
+    <div id="tela-pacotes" class="hidden">
+      <h2>Pacotes e Viagens Disponíveis</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Pacote / Saída</th>
+            <th>Hotel / City Tour</th>
+            <th>Disponibilidade</th>
+          </tr>
+        </thead>
+        <tbody id="lista-pacotes-tabela"></tbody>
+      </table>
+
+      <div class="bloco" style="margin-top: 14px;">
+        <strong>Descrição do Pacote:</strong>
+        <p id="descricao-pacote-selecionado" style="margin-top: 4px; color: #555;">Nenhum pacote selecionado.</p>
+      </div>
+
+      <div class="acoes">
+        <button onclick="trocarTela('tela-pacotes', 'tela-principal')">Voltar</button>
+        <button id="btn-selecionar-pacote" class="btn-primario" onclick="confirmarPacoteESeguir()" disabled>Avançar</button>
+      </div>
+    </div>
+
+    <!-- 4. TELA DE OPÇÃO DO CLIENTE -->
+    <div id="tela-opcao-cliente" class="hidden">
+      <h2>Identificação do Cliente Comprador</h2>
+      <div class="destaque-info" id="info-pacote-escolhido">Pacote Selecionado: --</div>
+
+      <div class="bloco">
+        <p style="margin-bottom: 14px;">O cliente comprador já possui cadastro no sistema?</p>
+        <div class="acoes-direita">
+          <button class="btn-primario" onclick="trocarTela('tela-opcao-cliente', 'tela-consulta-exclusiva')">Consultar Cliente Cadastrado</button>
+          <button class="trocar" onclick="trocarTela('tela-opcao-cliente', 'tela-cadastro-exclusiva')">Cadastrar Novo Cliente</button>
+        </div>
+      </div>
+
+      <div class="acoes">
+        <button onclick="trocarTela('tela-opcao-cliente', 'tela-pacotes')">Voltar</button>
+      </div>
+    </div>
+
+    <!-- 5. TELA DE CONSULTA DE CLIENTE -->
+    <div id="tela-consulta-exclusiva" class="hidden">
+      <h2>Consultar Cliente Cadastrado</h2>
+      <div class="linha-form">
+        <div class="campo">
+          <label for="input-busca-cliente">Buscar por Nome ou CPF</label>
+          <input type="text" id="input-busca-cliente" onkeyup="filtrarClientes()" placeholder="Digite o nome ou CPF...">
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome Completo</th>
+            <th>CPF</th>
+            <th>Telefone</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-consulta-clientes"></tbody>
+      </table>
+
+      <div class="acoes">
+        <button onclick="trocarTela('tela-consulta-exclusiva', 'tela-opcao-cliente')">Voltar</button>
+        <button class="btn-primario" onclick="selecionarClienteConsultado()">Selecionar Cliente</button>
+      </div>
+    </div>
+
+    <!-- 6. TELA DE ACOMPANHANTES (CLIENTE JÁ CADASTRADO) -->
+    <div id="tela-acompanhantes-consulta" class="hidden">
+      <h2>Acompanhantes da Reserva</h2>
+      <div class="destaque-info">
+        <strong>Cliente Comprador:</strong> <span id="info-cliente-consultado-box">--</span>
+      </div>
+
+      <div class="bloco">
+        <h3>Adicionar Acompanhante (Opcional)</h3>
+        <div class="linha-form">
+          <div class="campo">
+            <label for="cons-pass-nome">Nome do Acompanhante</label>
+            <input type="text" id="cons-pass-nome" placeholder="Nome completo">
+          </div>
+          <div class="campo">
+            <label for="cons-pass-cpf">CPF (11 números)</label>
+            <input type="text" id="cons-pass-cpf" maxlength="14" placeholder="00000000000">
+          </div>
+          <button onclick="adicionarAcompanhanteConsulta()">Adicionar</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-acompanhantes-consulta"></tbody>
+        </table>
+      </div>
+
+      <div class="acoes">
+        <button onclick="trocarTela('tela-acompanhantes-consulta', 'tela-consulta-exclusiva')">Voltar</button>
+        <button class="btn-primario" onclick="confirmarComAcompanhantesConsultados()">Gerar Reserva</button>
+      </div>
+    </div>
+
+    <!-- 7. TELA DE CADASTRO DE NOVO CLIENTE -->
+    <div id="tela-cadastro-exclusiva" class="hidden">
+      <h2>Cadastrar Novo Cliente Comprador</h2>
+      <div class="bloco">
+        <div class="campo">
+          <label for="cad-comp-nome">Nome Completo *</label>
+          <input type="text" id="cad-comp-nome" placeholder="Nome completo do comprador">
+        </div>
+        <div class="linha-form">
+          <div class="campo">
+            <label for="cad-comp-cpf">CPF (11 números) *</label>
+            <input type="text" id="cad-comp-cpf" maxlength="14" placeholder="00000000000">
+          </div>
+          <div class="campo">
+            <label for="cad-comp-tel">Telefone *</label>
+            <input type="text" id="cad-comp-tel" placeholder="(81) 99999-9999">
+          </div>
+        </div>
+      </div>
+
+      <div class="bloco">
+        <h3>Adicionar Acompanhante (Opcional)</h3>
+        <div class="linha-form">
+          <div class="campo">
+            <label for="cad-pass-nome">Nome do Acompanhante</label>
+            <input type="text" id="cad-pass-nome" placeholder="Nome completo">
+          </div>
+          <div class="campo">
+            <label for="cad-pass-cpf">CPF (11 números)</label>
+            <input type="text" id="cad-pass-cpf" maxlength="14" placeholder="00000000000">
+          </div>
+          <button onclick="adicionarAcompanhante()">Adicionar</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-acompanhantes"></tbody>
+        </table>
+      </div>
+
+      <div class="acoes">
+        <button onclick="trocarTela('tela-cadastro-exclusiva', 'tela-opcao-cliente')">Voltar</button>
+        <button class="btn-primario" onclick="salvarEGerarReserva()">Salvar e Gerar Reserva</button>
+      </div>
+    </div>
+
+    <!-- 8. TELA DE RESUMO DA RESERVA -->
+    <div id="tela-resumo-reserva" class="hidden">
+      <h2>Resumo da Reserva</h2>
+      <div class="destaque-info">
+        <strong>Código da Reserva:</strong> <span id="res-codigo">--</span> | 
+        <strong>Status:</strong> Pendente de Pagamento
+      </div>
+
+      <div class="bloco">
+        <p><strong>Vendedor:</strong> <span id="res-vendedor">--</span></p>
+        <p><strong>Cliente Comprador:</strong> <span id="res-comprador">--</span></p>
+        <p><strong>Pacote:</strong> [<span id="res-pacote-id">--</span>] <span id="res-pacote-nome">--</span></p>
+        <p><strong>Hospedagem:</strong> <span id="res-pacote-hotel">--</span> | <strong>City Tour:</strong> <span id="res-pacote-tour">--</span></p>
+      </div>
+
+      <h3>Passageiros Vinculados</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Nome</th>
+            <th>CPF</th>
+          </tr>
+        </thead>
+        <tbody id="res-tabela-passageiros"></tbody>
+      </table>
+
+      <div class="acoes">
+        <button onclick="concluirEVoltarInicio()">Cancelar / Início</button>
+        <button class="btn-primario" onclick="avancarParaVoucher()">Pagamento Concluído (Emitir Voucher)</button>
+      </div>
+    </div>
+
+    <!-- 9. TELA DE EMISSÃO DO VOUCHER -->
+    <div id="tela-voucher" class="hidden">
+      <div class="voucher-box">
+        <h2>Voucher Oficial de Embarque</h2>
+        <p><strong>Código do Voucher:</strong> <span id="vouc-codigo">--</span></p>
+        <p><strong>Reserva Referência:</strong> <span id="vouc-reserva">--</span></p>
+        <p><strong>Data de Emissão:</strong> <span id="vouc-data">--</span></p>
+        <p><strong>Validação:</strong> <span id="vouc-status">--</span></p>
+        <hr style="margin: 12px 0; border: 0; border-top: 1px solid #ddd;">
+        <p><strong>ID da Viagem:</strong> <span id="vouc-viagem-id">--</span></p>
+        <p><strong>Período:</strong> <span id="vouc-viagem-datas">--</span> | <strong>Saída:</strong> <span id="vouc-viagem-saida">--</span></p>
+        <p><strong>Detalhes do Pacote:</strong> <span id="vouc-pacote-detalhes">--</span></p>
+
+        <h3>Lista Oficial de Passageiros</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Passageiro</th>
+              <th>CPF</th>
+            </tr>
+          </thead>
+          <tbody id="vouc-tabela-passageiros"></tbody>
+        </table>
+
+        <p style="margin-top: 14px; font-size: 12px; color: #555;">
+          Instruções: Apresentar este voucher na sede da agência com 30 minutos de antecedência.
+        </p>
+      </div>
+
+      <div class="acoes no-print">
+        <button onclick="imprimirVoucher()">Imprimir Voucher</button>
+        <button class="btn-primario" onclick="concluirEVoltarInicio()">Concluir Atendimento</button>
+      </div>
+    </div>
+
+    <!-- 10. TELA DE HISTÓRICO E CANCELAMENTO DE RESERVAS -->
+    <div id="tela-historico-reservas" class="hidden">
+      <h2>Histórico de Reservas</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Reserva</th>
+            <th>Cliente Comprador</th>
+            <th>Pacote / Saída</th>
+            <th>Pax</th>
+            <th>Status</th>
+            <th>Voucher</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-historico-reservas"></tbody>
+      </table>
+
+      <div class="acoes">
+        <button onclick="trocarTela('tela-historico-reservas', 'tela-principal')">Voltar</button>
+      </div>
+    </div>
+
+    <!-- 11. TELA GERENCIAL: CADASTRO DE PACOTES E VIAGENS -->
+    <div id="tela-gerencia-pacotes" class="hidden">
+      <h2>Gerenciamento: Pacotes Turísticos e Datas de Saída</h2>
+
+      <div class="bloco">
+        <h3>1. Criar Novo Pacote Turístico</h3>
+        <div class="campo">
+          <label for="ger-pac-nome">Nome do Pacote *</label>
+          <input type="text" id="ger-pac-nome" placeholder="Ex: Feriadão em Porto de Galinhas">
+        </div>
+        <div class="linha-form">
+          <div class="campo">
+            <label for="ger-pac-hosp">Hospedagem (Hotel / Acomodação) *</label>
+            <select id="ger-pac-hosp"></select>
+          </div>
+          <div class="campo">
+            <label for="ger-pac-tour">City Tour Incluso *</label>
+            <select id="ger-pac-tour"></select>
+          </div>
+        </div>
+        <div class="campo">
+          <label for="ger-pac-desc">Descrição do Roteiro</label>
+          <input type="text" id="ger-pac-desc" placeholder="Breve resumo do que está incluso no pacote">
+        </div>
+        <button class="btn-primario" onclick="salvarNovoPacote()">Salvar Pacote</button>
+      </div>
+
+      <div class="bloco">
+        <h3>2. Abrir Nova Data de Saída (Viagem)</h3>
+        <div class="campo">
+          <label for="ger-viag-pacote">Selecione o Pacote *</label>
+          <select id="ger-viag-pacote"></select>
+        </div>
+        <div class="linha-form">
+          <div class="campo">
+            <label for="ger-viag-inicio">Data Início *</label>
+            <input type="date" id="ger-viag-inicio">
+          </div>
+          <div class="campo">
+            <label for="ger-viag-fim">Data Fim *</label>
+            <input type="date" id="ger-viag-fim">
+          </div>
+          <div class="campo">
+            <label for="ger-viag-hora">Horário Saída *</label>
+            <input type="time" id="ger-viag-hora" value="07:00">
+          </div>
+          <div class="campo">
+            <label for="ger-viag-vagas">Capacidade (Vagas) *</label>
+            <input type="number" id="ger-viag-vagas" min="1" value="40">
+          </div>
+        </div>
+        <button class="btn-primario" onclick="salvarNovaViagem()">Abrir Data de Viagem</button>
+      </div>
+
+      <h3>Pacotes Cadastrados</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Pacote</th>
+            <th>Hospedagem</th>
+            <th>City Tour</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-gerencia-pacotes"></tbody>
+      </table>
+
+      <div class="acoes">
+        <button onclick="trocarTela('tela-gerencia-pacotes', 'tela-principal')">Voltar ao Menu</button>
+      </div>
+    </div>
+
+    <!-- 12. TELA GERENCIAL: ALOCAÇÃO DE FROTA E GUIAS -->
+    <div id="tela-gerencia-logistica" class="hidden">
+      <h2>Gerenciamento: Alocação de Frota e Escala de Guias</h2>
+
+      <div class="bloco">
+        <h3>1. Alocar Veículo e Motorista para Viagem</h3>
+        <div class="campo">
+          <label for="log-viagem">Viagem Programada *</label>
+          <select id="log-viagem"></select>
+        </div>
+        <div class="linha-form">
+          <div class="campo">
+            <label for="log-veiculo">Veículo *</label>
+            <select id="log-veiculo"></select>
+          </div>
+          <div class="campo">
+            <label for="log-motorista">Motorista *</label>
+            <select id="log-motorista"></select>
+          </div>
+        </div>
+        <button class="btn-primario" onclick="salvarAlocacaoFrota()">Vincular Frota</button>
+      </div>
+
+      <div class="bloco">
+        <h3>2. Escalar Guia para City Tour</h3>
+        <div class="linha-form">
+          <div class="campo">
+            <label for="log-guia">Guia (Cadastur) *</label>
+            <select id="log-guia"></select>
+          </div>
+          <div class="campo">
+            <label for="log-tour">City Tour *</label>
+            <select id="log-tour"></select>
+          </div>
+          <div class="campo">
+            <label for="log-data-guia">Data da Escala *</label>
+            <input type="date" id="log-data-guia">
+          </div>
+        </div>
+        <div class="campo">
+          <label for="log-obs-guia">Observações (Ponto de encontro / horário)</label>
+          <input type="text" id="log-obs-guia" placeholder="Ex: Recepção do hotel às 08h30">
+        </div>
+        <button class="btn-primario" onclick="salvarEscalaGuia()">Escalar Guia</button>
+      </div>
+
+      <h3>Frota Alocada</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Viagem</th>
+            <th>Veículo</th>
+            <th>Motorista</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-frota-alocada"></tbody>
+      </table>
+
+      <h3>Guias Escalados</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Guia</th>
+            <th>City Tour</th>
+            <th>Observação</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-guias-escalados"></tbody>
+      </table>
+
+      <div class="acoes">
+        <button onclick="trocarTela('tela-gerencia-logistica', 'tela-principal')">Voltar ao Menu</button>
+      </div>
+    </div>
+
+    <!-- 13. TELA GERENCIAL: RELATÓRIOS GERENCIAIS -->
+    <div id="tela-relatorios" class="hidden">
+      <h2>Relatórios Gerenciais</h2>
+
+      <div class="cards-resumo">
+        <div class="card-kpi">
+          <span>Passageiros Confirmados</span>
+          <strong id="kpi-pax-confirmados">0</strong>
+        </div>
+        <div class="card-kpi">
+          <span>Passageiros Pendentes</span>
+          <strong id="kpi-pax-pendentes">0</strong>
+        </div>
+        <div class="card-kpi">
+          <span>Reservas Confirmadas</span>
+          <strong id="kpi-reservas-confirmadas">0</strong>
+        </div>
+      </div>
+
+      <h3>Taxa de Ocupação por Viagem</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Pacote</th>
+            <th>Saída</th>
+            <th>Ocupadas / Total</th>
+            <th>Disponíveis</th>
+            <th>Ocupação</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-rel-ocupacao"></tbody>
+      </table>
+
+      <h3>Desempenho por Vendedor</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Vendedor</th>
+            <th>Reservas Ativas</th>
+            <th>Pax Confirmados</th>
+            <th>Pax Pendentes</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-rel-vendedores"></tbody>
+      </table>
+
+      <div class="acoes">
+        <button onclick="trocarTela('tela-relatorios', 'tela-principal')">Voltar ao Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
