@@ -1,295 +1,218 @@
-CREATE database erp_agencia;
-USE erp_agencia;
+CREATE DATABASE db_agencia_viagens
+DEFAULT CHARACTER SET utf8mb4
+DEFAULT COLLATE utf8mb4_unicode_ci;
 
+USE db_agencia_viagens;
 
 CREATE TABLE vendedor (
-  `id_vendedor` INT NOT NULL,
-  `nome` VARCHAR(100) NOT NULL,
-  `cpf` VARCHAR(11) NOT NULL,
-  `email` VARCHAR(100) NOT NULL,
-  `senha_hash` VARCHAR(255) NOT NULL,
-  `ativo` TINYINT NOT NULL DEFAULT 1,
-  PRIMARY KEY (`id_vendedor`),
-  UNIQUE INDEX `cpf_UNIQUE` (`cpf` ASC) VISIBLE,
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
-ENGINE = InnoDB;
+    id_vendedor INT AUTO_INCREMENT NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(11) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    senha_hash VARCHAR(255) NOT NULL,
+    ativo TINYINT NOT NULL DEFAULT 1,
+    CONSTRAINT pk_vendedor PRIMARY KEY (id_vendedor),
+    CONSTRAINT uk_vendedor_cpf UNIQUE (cpf),
+    CONSTRAINT uk_vendedor_email UNIQUE (email)
+) ENGINE=InnoDB;
+
 
 
 CREATE TABLE cliente (
-  `id_cliente` INT NOT NULL,
-  `nome` VARCHAR(100) NOT NULL,
-  `cpf` VARCHAR(11) NOT NULL,
-  `telefone` VARCHAR(20) NOT NULL,
-  `email` VARCHAR(100) NOT NULL,
-  PRIMARY KEY (`id_cliente`),
-  UNIQUE INDEX `cpf_UNIQUE` (`cpf` ASC) VISIBLE)
-ENGINE = InnoDB;
+    id_cliente INT AUTO_INCREMENT NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(11) NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NULL,
+    CONSTRAINT pk_cliente PRIMARY KEY (id_cliente),
+    CONSTRAINT uk_cliente_cpf UNIQUE (cpf)
+) ENGINE=InnoDB;
 
-
-
-CREATE TABLE pacote(
-  `id_pacote` INT NOT NULL,
-  `nome_pacote` VARCHAR(100) NOT NULL,
-  `descricao` VARCHAR(45) NOT NULL,
-  `preco_base` DECIMAL(10,2) NOT NULL,
-  PRIMARY KEY (`id_pacote`))
-ENGINE = InnoDB;
 
 
 CREATE TABLE hotel (
-  `id_hotel` INT NOT NULL,
-  `nome_fantasia` VARCHAR(100) NOT NULL,
-  `cnpj` VARCHAR(14) NOT NULL,
-  `telefone` VARCHAR(20) NOT NULL,
-  `cidade` VARCHAR(200) NOT NULL,
-  PRIMARY KEY (`id_hotel`),
-  UNIQUE INDEX `cnpj_UNIQUE` (`cnpj` ASC) VISIBLE)
-ENGINE = InnoDB;
+    id_hotel INT AUTO_INCREMENT NOT NULL,
+    nome_fantasia VARCHAR(100) NOT NULL,
+    cnpj VARCHAR(14) NULL,
+    telefone VARCHAR(20) NULL,
+    cidade VARCHAR(200) NOT NULL,
+    CONSTRAINT pk_hotel PRIMARY KEY (id_hotel)
+) ENGINE=InnoDB;
 
-
-CREATE TABLE IF NOT EXISTS hospedagem (
-  `id_hospedagem` INT NOT NULL PRIMARY KEY,
-  `tipo_acomodacao` VARCHAR(45) NOT NULL,
-  `valor_diaria` DECIMAL(10,2) NOT NULL,
-  `data_checkin` DATE NOT NULL,
-  `data_checkout` DATE NOT NULL,
-  `id_hotel` INT NOT NULL,
-  `id_pacote` INT NOT NULL,
-  
-  INDEX `fk_hospedagem_hotel_idx` (`id_hotel` ASC),
-  INDEX `fk_hospedagem_pacote_idx` (`id_pacote` ASC),
-  
-  CONSTRAINT `fk_hospedagem_hotel`
-    FOREIGN KEY (`id_hotel`)
-    REFERENCES `erp_agencia`.`hotel` (`id_hotel`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-    
-  CONSTRAINT `fk_hospedagem_pacote`
-    FOREIGN KEY (`id_pacote`)
-    REFERENCES `erp_agencia`.`pacote` (`id_pacote`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION) 
-ENGINE = InnoDB;
-
-
-CREATE TABLE city_tour (
-  `id_city_tour` INT NOT NULL,
-  `nome_tour` VARCHAR(100) NOT NULL,
-  `descricao_roteiro` VARCHAR(45) NOT NULL,
-  `data` DATE NOT NULL,
-  `horario` DATETIME NOT NULL,
-  `id_pacote` INT NOT NULL,
-  PRIMARY KEY (`id_city_tour`),
-  INDEX `fk_city_tour_pacote_idx` (`id_pacote` ASC) VISIBLE,
-  CONSTRAINT `fk_city_tour_pacote`
-    FOREIGN KEY (`id_pacote`)
-    REFERENCES `erp_agencia`.`pacote` (`id_pacote`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
 
 
 CREATE TABLE guia (
-  `id_guia` INT NOT NULL,
-  `nome` VARCHAR(100) NOT NULL,
-  `cpf` VARCHAR(11) NOT NULL,
-  `telefone` VARCHAR(20) NOT NULL,
-  `registro_cadastur` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id_guia`),
-  UNIQUE INDEX `cpf_UNIQUE` (`cpf` ASC) VISIBLE,
-  UNIQUE INDEX `registro_cadastur_UNIQUE` (`registro_cadastur` ASC) VISIBLE)
-ENGINE = InnoDB;
-
-
-CREATE TABLE viagem(
-  `id_viagem` INT NOT NULL,
-  `data_inicio` DATE NOT NULL,
-  `data_fim` DATE NOT NULL,
-  `horario_saida` DATETIME NOT NULL,
-  `capacidade_total` INT NOT NULL DEFAULT 0,
-  `vagas_disponiveis` INT NOT NULL DEFAULT 0,
-  `id_pacote` INT NOT NULL,
-  PRIMARY KEY (`id_viagem`),
-  INDEX `fk_viagem_pacote_idx` (`id_pacote` ASC) VISIBLE,
-  CONSTRAINT `fk_viagem_pacote`
-    FOREIGN KEY (`id_pacote`)
-    REFERENCES `erp_agencia`.`pacote` (`id_pacote`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    id_guia INT AUTO_INCREMENT NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(11) NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    registro_cadastur VARCHAR(45) NOT NULL,
+    CONSTRAINT pk_guia PRIMARY KEY (id_guia),
+    CONSTRAINT uk_guia_cpf UNIQUE (cpf),
+    CONSTRAINT uk_guia_cadastur UNIQUE (registro_cadastur)
+) ENGINE=InnoDB;
 
 
 
 CREATE TABLE veiculo (
-  `id_veiculo` INT NOT NULL,
-  `placa` VARCHAR(8) NOT NULL,
-  `modelo` VARCHAR(45) NOT NULL,
-  `capacidade_maxima` INT NOT NULL,
-  PRIMARY KEY (`id_veiculo`),
-  UNIQUE INDEX `placa_UNIQUE` (`placa` ASC) VISIBLE)
-ENGINE = InnoDB;
+    id_veiculo INT AUTO_INCREMENT NOT NULL,
+    placa VARCHAR(8) NOT NULL,
+    modelo VARCHAR(45) NOT NULL,
+    capacidade_maxima INT NOT NULL DEFAULT 40,
+    CONSTRAINT pk_veiculo PRIMARY KEY (id_veiculo),
+    CONSTRAINT uk_veiculo_placa UNIQUE (placa)
+) ENGINE=InnoDB;
+
 
 
 CREATE TABLE motorista (
-  `id_motorista` INT NOT NULL,
-  `nome` VARCHAR(100) NOT NULL,
-  `cpf` VARCHAR(11) NOT NULL,
-  `cnh` VARCHAR(20) NOT NULL,
-  `telefone` VARCHAR(20) NOT NULL,
-  PRIMARY KEY (`id_motorista`),
-  UNIQUE INDEX `cpf_UNIQUE` (`cpf` ASC) VISIBLE,
-  UNIQUE INDEX `cnh_UNIQUE` (`cnh` ASC) VISIBLE)
-ENGINE = InnoDB;
+    id_motorista INT AUTO_INCREMENT NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(11) NOT NULL,
+    cnh VARCHAR(20) NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    CONSTRAINT pk_motorista PRIMARY KEY (id_motorista),
+    CONSTRAINT uk_motorista_cpf UNIQUE (cpf),
+    CONSTRAINT uk_motorista_cnh UNIQUE (cnh)
+) ENGINE=InnoDB;
 
 
-CREATE TABLE reserva (
-  `id_reserva` INT NOT NULL,
-  `data_reserva` DATETIME NOT NULL,
-  `quant_passageiros` INT NOT NULL,
-  `status_reserva` VARCHAR(20) NOT NULL,
-  `id_vendedor` INT NOT NULL,
-  `id_viagem` INT NOT NULL,
-  PRIMARY KEY (`id_reserva`),
-  INDEX `fk_reserva_vendedor_idx` (`id_vendedor` ASC) VISIBLE,
-  INDEX `fk_reserva_viagem_idx` (`id_viagem` ASC) VISIBLE,
-  CONSTRAINT `fk_reserva_vendedor`
-    FOREIGN KEY (`id_vendedor`)
-    REFERENCES `erp_agencia`.`vendedor` (`id_vendedor`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_reserva_viagem`
-    FOREIGN KEY (`id_viagem`)
-    REFERENCES `erp_agencia`.`viagem` (`id_viagem`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+
+CREATE TABLE hospedagem (
+    id_hospedagem INT AUTO_INCREMENT NOT NULL,
+    tipo_acomodacao VARCHAR(45) NOT NULL,
+    id_hotel INT NOT NULL,
+    CONSTRAINT pk_hospedagem PRIMARY KEY (id_hospedagem),
+    CONSTRAINT fk_hospedagem_hotel FOREIGN KEY (id_hotel)
+        REFERENCES hotel (id_hotel)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
 
 
-CREATE TABLE pagamento (
-  `id_pagamento` INT NOT NULL,
-  `data_pagamento` DATETIME NOT NULL,
-  `valor_total` DECIMAL(10) NOT NULL,
-  `forma_pagamento` VARCHAR(20) NOT NULL,
-  `quant_parcelas` INT NOT NULL,
-  `status_pagamento` VARCHAR(20) NOT NULL,
-  `id_reserva` INT NOT NULL,
-  PRIMARY KEY (`id_pagamento`),
-  INDEX `fk_pagamento_reserva_idx` (`id_reserva` ASC) VISIBLE,
-  UNIQUE INDEX `reserva_id_reserva_UNIQUE` (`id_reserva` ASC) VISIBLE,
-  CONSTRAINT `fk_pagamento_reserva`
-    FOREIGN KEY (`id_reserva`)
-    REFERENCES `erp_agencia`.`reserva` (`id_reserva`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+
+CREATE TABLE city_tour (
+    id_city_tour INT AUTO_INCREMENT NOT NULL,
+    nome_tour VARCHAR(100) NOT NULL,
+    descricao_roteiro VARCHAR(255) NULL,
+    CONSTRAINT pk_city_tour PRIMARY KEY (id_city_tour)
+) ENGINE=InnoDB;
 
 
-CREATE TABLE comprovante (
-  `id_comprovante` INT NOT NULL,
-  `numero_comprovante` VARCHAR(45) NOT NULL,
-  `data_emissao` DATETIME NOT NULL,
-  `valor_pago` DECIMAL(10,2) NOT NULL,
-  `id_pagamento` INT NOT NULL,
-  PRIMARY KEY (`id_comprovante`),
-  INDEX `fk_comprovante_pagamento_idx` (`id_pagamento` ASC) VISIBLE,
-  UNIQUE INDEX `pagamento_id_pagamento_UNIQUE` (`id_pagamento` ASC) VISIBLE,
-  CONSTRAINT `fk_comprovante_pagamento`
-    FOREIGN KEY (`id_pagamento`)
-    REFERENCES `erp_agencia`.`pagamento` (`id_pagamento`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+
+CREATE TABLE escala_guia (
+    id_escala_guia INT AUTO_INCREMENT NOT NULL,
+    data_escalacao DATE NOT NULL,
+    observacao LONGTEXT NULL,
+    guia_id_guia INT NOT NULL,
+    id_city_tour INT NOT NULL,
+    CONSTRAINT pk_escala_guia PRIMARY KEY (id_escala_guia),
+    CONSTRAINT fk_escala_guia_guia FOREIGN KEY (guia_id_guia)
+        REFERENCES guia (id_guia)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_escala_guia_city_tour FOREIGN KEY (id_city_tour)
+        REFERENCES city_tour (id_city_tour)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
 
 
-CREATE TABLE voucher (
-  `id_voucher` INT NOT NULL,
-  `cod_voucher` VARCHAR(45) NOT NULL,
-  `instrucoes_embarque` TINYTEXT NOT NULL,
-  `id_reserva` INT NOT NULL,
-  PRIMARY KEY (`id_voucher`),
-  UNIQUE INDEX `cod_voucher_UNIQUE` (`cod_voucher` ASC) VISIBLE,
-  INDEX `fk_voucher_reserva_idx` (`id_reserva` ASC) VISIBLE,
-  UNIQUE INDEX `reserva_id_reserva_UNIQUE` (`id_reserva` ASC) VISIBLE,
-  CONSTRAINT `fk_voucher_reserva`
-    FOREIGN KEY (`id_reserva`)
-    REFERENCES `erp_agencia`.`reserva` (`id_reserva`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+CREATE TABLE pacote (
+    id_pacote INT AUTO_INCREMENT NOT NULL,
+    nome_pacote VARCHAR(100) NOT NULL,
+    descricao VARCHAR(255) NULL,
+    id_hospedagem INT NOT NULL,
+    id_city_tour INT NOT NULL,
+    CONSTRAINT pk_pacote PRIMARY KEY (id_pacote),
+    CONSTRAINT fk_pacote_hospedagem FOREIGN KEY (id_hospedagem)
+        REFERENCES hospedagem (id_hospedagem)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_pacote_city_tour FOREIGN KEY (id_city_tour)
+        REFERENCES city_tour (id_city_tour)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+
+
+
+CREATE TABLE viagem (
+    id_viagem INT AUTO_INCREMENT NOT NULL,
+    data_inicio DATE NOT NULL,
+    data_fim DATE NOT NULL,
+    horario_saida DATETIME NOT NULL,
+    capacidade_total INT NOT NULL DEFAULT 0,
+    vagas_disponiveis INT NOT NULL DEFAULT 0,
+    id_pacote INT NOT NULL,
+    CONSTRAINT pk_viagem PRIMARY KEY (id_viagem),
+    CONSTRAINT fk_viagem_pacote FOREIGN KEY (id_pacote)
+        REFERENCES pacote (id_pacote)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+
 
 
 CREATE TABLE alocacao_veiculo (
-  `id_alocacao_veiculo` INT NOT NULL,
-  `horario_embarque` DATETIME NOT NULL,
-  `rota` VARCHAR(150) NOT NULL,
-  `id_veiculo` INT NOT NULL,
-  `id_motorista` INT NOT NULL,
-  `id_viagem` INT NOT NULL,
-  PRIMARY KEY (`id_alocacao_veiculo`),
-  INDEX `fk_alocacao_veiculo_veiculo_idx` (`id_veiculo` ASC) VISIBLE,
-  INDEX `fk_alocacao_veiculo_motorista_idx` (`id_motorista` ASC) VISIBLE,
-  INDEX `fk_alocacao_veiculo_viagem_idx` (`id_viagem` ASC) VISIBLE,
-  CONSTRAINT `fk_alocacao_veiculo_veiculo`
-    FOREIGN KEY (`id_veiculo`)
-    REFERENCES `erp_agencia`.`veiculo` (`id_veiculo`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_alocacao_veiculo_motorista`
-    FOREIGN KEY (`id_motorista`)
-    REFERENCES `erp_agencia`.`motorista` (`id_motorista`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_alocacao_veiculo_viagem`
-    FOREIGN KEY (`id_viagem`)
-    REFERENCES `erp_agencia`.`viagem` (`id_viagem`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    id_alocacao_veiculo INT AUTO_INCREMENT NOT NULL,
+    id_veiculo INT NOT NULL,
+    id_motorista INT NOT NULL,
+    id_viagem INT NOT NULL,
+    CONSTRAINT pk_alocacao_veiculo PRIMARY KEY (id_alocacao_veiculo),
+    CONSTRAINT fk_alocacao_veiculo_veiculo FOREIGN KEY (id_veiculo)
+        REFERENCES veiculo (id_veiculo)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_alocacao_veiculo_motorista FOREIGN KEY (id_motorista)
+        REFERENCES motorista (id_motorista)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_alocacao_veiculo_viagem FOREIGN KEY (id_viagem)
+        REFERENCES viagem (id_viagem)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
 
 
-CREATE TABLE composicao_reserva(
-  `idcomposicao_reserva` INT NOT NULL,
-  `id_cliente` INT NOT NULL,
-  `id_reserva` INT NOT NULL,
-  PRIMARY KEY (`idcomposicao_reserva`),
-  INDEX `fk_composicao_reserva_cliente_idx` (`id_cliente` ASC) VISIBLE,
-  INDEX `fk_composicao_reserva_reserva_idx` (`id_reserva` ASC) VISIBLE,
-  CONSTRAINT `fk_composicao_reserva_cliente`
-    FOREIGN KEY (`id_cliente`)
-    REFERENCES `erp_agencia`.`cliente` (`id_cliente`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_composicao_reserva_reserva`
-    FOREIGN KEY (`id_reserva`)
-    REFERENCES `erp_agencia`.`reserva` (`id_reserva`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+CREATE TABLE reserva (
+    id_reserva INT AUTO_INCREMENT NOT NULL,
+    data_reserva DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    quant_passageiros INT NOT NULL,
+    status_reserva VARCHAR(20) NOT NULL DEFAULT 'Pendente',
+    id_vendedor INT NOT NULL,
+    id_viagem INT NOT NULL,
+    id_cliente_comprador INT NOT NULL,
+    CONSTRAINT pk_reserva PRIMARY KEY (id_reserva),
+    CONSTRAINT fk_reserva_vendedor FOREIGN KEY (id_vendedor)
+        REFERENCES vendedor (id_vendedor)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_reserva_viagem FOREIGN KEY (id_viagem)
+        REFERENCES viagem (id_viagem)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_reserva_comprador FOREIGN KEY (id_cliente_comprador)
+        REFERENCES cliente (id_cliente)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
 
 
-CREATE TABLE escala_guia(
-  `id_escala_guia` INT NOT NULL,
-  `data_escalacao` DATE NOT NULL,
-  `observacao` LONGTEXT NOT NULL,
-  `guia_id_guia` INT NOT NULL,
-  `id_city_tour` INT NOT NULL,
-  PRIMARY KEY (`id_escala_guia`),
-  INDEX `fk_escala_guia_guia_idx` (`guia_id_guia` ASC) VISIBLE,
-  INDEX `fk_escala_guia_city_tour_idx` (`id_city_tour` ASC) VISIBLE,
-  CONSTRAINT `fk_escala_guia_guia`
-    FOREIGN KEY (`guia_id_guia`)
-    REFERENCES `erp_agencia`.`guia` (`id_guia`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_escala_guia_city_tour`
-    FOREIGN KEY (`id_city_tour`)
-    REFERENCES `erp_agencia`.`city_tour` (`id_city_tour`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+CREATE TABLE composicao_reserva (
+    id_composicao_reserva INT AUTO_INCREMENT NOT NULL,
+    id_cliente INT NOT NULL,
+    id_reserva INT NOT NULL,
+    CONSTRAINT pk_composicao_reserva PRIMARY KEY (id_composicao_reserva),
+    CONSTRAINT fk_composicao_cliente FOREIGN KEY (id_cliente)
+        REFERENCES cliente (id_cliente)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_composicao_reserva FOREIGN KEY (id_reserva)
+        REFERENCES reserva (id_reserva)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
 
 
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+CREATE TABLE voucher (
+    id_voucher INT AUTO_INCREMENT NOT NULL,
+    cod_voucher VARCHAR(45) NOT NULL,
+    instrucoes_embarque TINYTEXT NULL,
+    id_reserva INT NOT NULL,
+    data_emissao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    confirmado_vendedor VARCHAR(45) NOT NULL DEFAULT 'Confirmado',
+    CONSTRAINT pk_voucher PRIMARY KEY (id_voucher),
+    CONSTRAINT uk_voucher_codigo UNIQUE (cod_voucher),
+    CONSTRAINT fk_voucher_reserva FOREIGN KEY (id_reserva)
+        REFERENCES reserva (id_reserva)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB;
