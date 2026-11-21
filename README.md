@@ -2,6 +2,7 @@
 
 
 planejamento técnico → construção → integração → testes → implantação → validação
+
 ---
 Primeira parte: desenvolvimento do sistema:
 ---
