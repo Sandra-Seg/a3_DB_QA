@@ -1,7 +1,7 @@
 # Projeto das UCs Banco de Dados e Garantia da Qualidade de Software
 
 
-                            planejamento técnico → construção → integração → testes → implantação → validação
+                      planejamento técnico → construção → integração → testes → implantação → validação
 ---
 Primeira parte: desenvolvimento do sistema:
 ---
