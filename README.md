@@ -26,5 +26,5 @@ Segunda parte: desenvolvimento do sistema:
 ---
 Terceira parte: 
 ---
-- [x] Escrever o Artigo
+- [x] Artigo
 - [x] Slides de Apresentação
