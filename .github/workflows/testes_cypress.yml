@@ -69,6 +69,18 @@ jobs:
 
             INSERT IGNORE INTO viagem (id_viagem, data_inicio, data_fim, horario_saida, capacidade_total, vagas_disponiveis, id_pacote)
             VALUES (1, '2026-12-10', '2026-12-15', '2026-12-10 08:00:00', 40, 40, 1);
+
+            INSERT IGNORE INTO veiculo (id_veiculo, placa, modelo, capacidade_maxima) VALUES
+            (1, 'ABC1D01', 'Micro-ônibus Volare 01', 40),
+            (2, 'ABC1D02', 'Micro-ônibus Volare 02', 40),
+            (3, 'ABC1D03', 'Micro-ônibus Volare 03', 40),
+            (4, 'ABC1D04', 'Micro-ônibus Volare 04', 40);
+
+            INSERT IGNORE INTO motorista (id_motorista, nome, cpf, cnh, telefone) VALUES
+            (1, 'Carlos Silva', '11111111101', '12345678901', '(81) 98888-0001'),
+            (2, 'Marcos Souza', '11111111102', '12345678902', '(81) 98888-0002'),
+            (3, 'Roberto Lima', '11111111103', '12345678903', '(81) 98888-0003'),
+            (4, 'André Costa', '11111111104', '12345678904', '(81) 98888-0004');
           "
 
       - name: Iniciar aplicação Flask e rodar Cypress
