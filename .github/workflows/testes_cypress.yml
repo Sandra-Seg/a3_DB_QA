@@ -7,22 +7,22 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-services:
-  mysql:
-    image: mysql:8.0
-    env:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: db_agencia_viagens
-    ports:
-      - 3306:3306
-    options: --health-cmd="mysqladmin ping -h localhost -proot" --health-interval=10s --health-timeout=5s --health-retries=5
-
 jobs:
   cypress-e2e:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ms-erp-teste
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: db_agencia_viagens
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping -h localhost -proot" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
       - name: Checkout do repositório
