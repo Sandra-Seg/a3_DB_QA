@@ -1,1 +1,84 @@
+name: Testes Automatizados Cypress (ERP)
 
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+services:
+  mysql:
+    image: mysql:8.0
+    env:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_agencia_viagens
+    ports:
+      - 3306:3306
+    options: --health-cmd="mysqladmin ping -h localhost -proot" --health-interval=10s --health-timeout=5s --health-retries=5
+
+jobs:
+  cypress-e2e:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ms-erp-teste
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependências Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: ms-erp-teste/package-lock.json
+
+      - name: Instalar dependências Node / Cypress
+        run: npm install
+
+      - name: Importar banco e preparar dados iniciais
+        env:
+          MYSQL_PWD: root
+        run: |
+          mysql -h 127.0.0.1 -u root db_agencia_viagens < db_agencia_viagens.sql
+          mysql -h 127.0.0.1 -u root db_agencia_viagens -e "
+            INSERT IGNORE INTO vendedor (nome, cpf, email, senha_hash, ativo)
+            VALUES ('Vendedor Teste', '12345678901', 'vendedor.teste@agencia.com', '123456', 1);
+          "
+
+      - name: Iniciar aplicação Flask e rodar Cypress
+        env:
+          FLASK_APP: app.py
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_NAME: db_agencia_viagens
+        run: |
+          python app.py > flask.log 2>&1 &
+          SERVER_PID=$!
+
+          for i in $(seq 1 30); do
+            if curl -s http://127.0.0.1:5000/ > /dev/null; then
+              echo "Servidor Flask no ar!"
+              break
+            fi
+            sleep 1
+          done
+
+          npx cypress run
+          CYPRESS_EXIT=$?
+
+          kill $SERVER_PID || true
+          exit $CYPRESS_EXIT
