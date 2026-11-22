@@ -1,2 +1,2 @@
 # ms-erp
-ERP para Agência de Viagens
+ERP para Agência de Viagens de pequeno porte
