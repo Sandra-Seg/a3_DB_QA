@@ -52,8 +52,9 @@ jobs:
         run: |
           mysql -h 127.0.0.1 -u root db_agencia_viagens < db_agencia_viagens.sql
           mysql -h 127.0.0.1 -u root db_agencia_viagens -e "
-            INSERT IGNORE INTO vendedor (id_vendedor, nome, cpf, email, senha_hash, ativo)
-            VALUES (1, 'Sidney Vendas', '12345678901', 'sidney.vendas@agencia.com', '123456', 1);
+            INSERT IGNORE INTO vendedor (id_vendedor, nome, cpf, email, senha_hash, ativo) VALUES
+            (1, 'Sidney Vendas', '12345678901', 'sidney.vendas@agencia.com', '123456', 1),
+            (2, 'Vendedor Inativo', '12345678902', 'inativo.vendas@agencia.com', '123456', 0);
 
             INSERT IGNORE INTO hotel (id_hotel, nome_fantasia, cnpj, telefone, cidade)
             VALUES (1, 'Hotel Serra Bela', '12345678000199', '(81) 3333-4444', 'Gramado');
@@ -81,6 +82,9 @@ jobs:
             (2, 'Marcos Souza', '11111111102', '12345678902', '(81) 98888-0002'),
             (3, 'Roberto Lima', '11111111103', '12345678903', '(81) 98888-0003'),
             (4, 'André Costa', '11111111104', '12345678904', '(81) 98888-0004');
+
+            INSERT IGNORE INTO guia (id_guia, nome, cpf, registro_cadastur, telefone)
+            VALUES (1, 'Mariana Guia Turística', '22222222201', 'CAD-PE-998877', '(81) 97777-1010');
           "
 
       - name: Iniciar aplicação Flask e rodar Cypress
