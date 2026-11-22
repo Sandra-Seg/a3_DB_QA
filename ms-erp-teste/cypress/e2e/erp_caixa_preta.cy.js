@@ -116,7 +116,7 @@ describe("Testes de Caixa Preta - ERP Agência de Viagens (MS Soluções)", () =
 
     cy.get("#cad-pass-nome").type("Acompanhante Excedente");
     cy.get("#cad-pass-cpf").type("77766655544");
-    cy.contains("button", "Adicionar").click();
+    cy.get("#tela-cadastro-exclusiva").contains("button", "Adicionar").click();
 
     cy.contains("button", "Salvar e Gerar Reserva").click();
 
