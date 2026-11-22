@@ -46,14 +46,29 @@ jobs:
       - name: Instalar dependências Node / Cypress
         run: npm install
 
-      - name: Importar banco e preparar vendedor Sidney
+      - name: Importar banco e preparar dados iniciais
         env:
           MYSQL_PWD: root
         run: |
           mysql -h 127.0.0.1 -u root db_agencia_viagens < db_agencia_viagens.sql
           mysql -h 127.0.0.1 -u root db_agencia_viagens -e "
-            INSERT IGNORE INTO vendedor (nome, cpf, email, senha_hash, ativo)
-            VALUES ('Sidney Vendas', '12345678901', 'sidney.vendas@agencia.com', '123456', 1);
+            INSERT IGNORE INTO vendedor (id_vendedor, nome, cpf, email, senha_hash, ativo)
+            VALUES (1, 'Sidney Vendas', '12345678901', 'sidney.vendas@agencia.com', '123456', 1);
+
+            INSERT IGNORE INTO hotel (id_hotel, nome_fantasia, cnpj, telefone, cidade)
+            VALUES (1, 'Hotel Serra Bela', '12345678000199', '(81) 3333-4444', 'Gramado');
+
+            INSERT IGNORE INTO hospedagem (id_hospedagem, tipo_acomodacao, id_hotel)
+            VALUES (1, 'Apartamento Duplo', 1);
+
+            INSERT IGNORE INTO city_tour (id_city_tour, nome_tour, descricao_roteiro)
+            VALUES (1, 'Roteiro Histórico e Mirantes', 'Passeio guiado pelos principais pontos turísticos');
+
+            INSERT IGNORE INTO pacote (id_pacote, nome_pacote, descricao, id_hospedagem, id_city_tour)
+            VALUES (1, 'Serra Gaúcha Completo', 'Pacote de teste automatizado', 1, 1);
+
+            INSERT IGNORE INTO viagem (id_viagem, data_inicio, data_fim, horario_saida, capacidade_total, vagas_disponiveis, id_pacote)
+            VALUES (1, '2026-12-10', '2026-12-15', '2026-12-10 08:00:00', 40, 40, 1);
           "
 
       - name: Iniciar aplicação Flask e rodar Cypress
