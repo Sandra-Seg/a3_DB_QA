@@ -46,14 +46,14 @@ jobs:
       - name: Instalar dependências Node / Cypress
         run: npm install
 
-      - name: Importar banco e preparar dados iniciais
+      - name: Importar banco e preparar vendedor Sidney
         env:
           MYSQL_PWD: root
         run: |
           mysql -h 127.0.0.1 -u root db_agencia_viagens < db_agencia_viagens.sql
           mysql -h 127.0.0.1 -u root db_agencia_viagens -e "
             INSERT IGNORE INTO vendedor (nome, cpf, email, senha_hash, ativo)
-            VALUES ('Vendedor Teste', '12345678901', 'vendedor.teste@agencia.com', '123456', 1);
+            VALUES ('Sidney Vendas', '12345678901', 'sidney.vendas@agencia.com', '123456', 1);
           "
 
       - name: Iniciar aplicação Flask e rodar Cypress
