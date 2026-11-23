@@ -1,5 +1,5 @@
 # ms-erp para Agência de Viagens
----
+
 ## Garantia da Qualidade e Testes Automatizados (Cypress + GitHub Actions)
 
 O sistema conta com uma suíte automatizada de testes de **Caixa-Preta (E2E e API REST)** desenvolvida com **Cypress** e integrada ao **GitHub Actions** (`.github/workflows/testes_cypress.yml`), executada automaticamente a cada `push` ou `pull_request` na branch `main`.
