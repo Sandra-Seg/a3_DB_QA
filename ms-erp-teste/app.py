@@ -390,8 +390,11 @@ def criar_pacote():
         cursor.close()
         conn.close()
 
+
 @app.route("/api/gerencia/viagens", methods=["POST"])
 def criar_viagem():
+    from datetime import datetime
+
     dados = request.get_json()
     id_pacote = dados.get("id_pacote")
     data_inicio = dados.get("data_inicio")
@@ -401,6 +404,16 @@ def criar_viagem():
 
     if not id_pacote or not data_inicio or not data_fim or capacidade <= 0:
         return jsonify({"sucesso": False, "mensagem": "Preencha pacote, datas e capacidade maior que zero."}), 400
+
+    # Validação do formato das datas
+    try:
+        datetime.strptime(data_inicio, "%Y-%m-%d")
+        datetime.strptime(data_fim, "%Y-%m-%d")
+    except (ValueError, TypeError):
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Formato de data inválido. Utilize AAAA-MM-DD."
+        }), 400
 
     horario_saida_dt = f"{data_inicio} {hora_saida}:00"
 
@@ -422,6 +435,7 @@ def criar_viagem():
     finally:
         cursor.close()
         conn.close()
+
 
 # ==============================================================================
 # MÓDULO GERENCIAL 2: ALOCAÇÃO DE FROTA E GUIAS
