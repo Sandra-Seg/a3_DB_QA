@@ -19,10 +19,10 @@ Segunda parte: desenvolvimento do sistema:
 - [x] Conversa para definir o visual do sistema
 - [x] Implementação do Sistema (desenvolvimento do código-fonte)
 - [x] Versionamento e Gerenciamento do Código-Fonte no GitHub.
-- [ ] Integração da Aplicação Web com o Banco de Dados
-- [ ] Execução dos Testes Funcionais do Sistema.
-- [ ] Implantação do Sistema em Ambiente de Nuvem.
-- [ ] Realização de Testes e Validação do Sistema em Ambiente de Nuvem.
+- [x] Integração da Aplicação Web com o Banco de Dados
+- [x] Execução dos Testes Funcionais do Sistema.
+- [x] Implantação do Sistema em Ambiente de Nuvem.
+- [x] Realização de Testes e Validação do Sistema em Ambiente de Nuvem.
 ---
 Terceira parte: 
 ---
